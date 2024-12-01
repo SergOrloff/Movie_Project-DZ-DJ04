@@ -1,0 +1,67 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+    background: linear-gradient(to right, lightblue, lightgreen);
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: cover;
+}
+
+.modal-body img {
+    width: 100%;
+    height: auto;
+    margin-bottom: 15px;
+}
+
+/* Фиксированный размер модального окна */
+.fixed-modal {
+    width: 800px; /* Задайте желаемую ширину */
+    max-width: 100%;
+}
+
+.fixed-modal .modal-body {
+    max-height: 500px; /* Задайте желаемую высоту */
+    overflow-y: auto;
+}
+
+/* Адаптивность на мобильных устройствах */
+@media (max-width: 767px) {
+    .fixed-modal {
+        width: 100%;
+        margin: 0;
+    }
+    .fixed-modal .modal-body {
+        max-height: calc(100vh - 150px); /* Высота с учетом размеров экрана */
+    }
+}
+/* Карточка фильма */
+.card {
+    height: 450px; /* Фиксированная высота для всех карточек */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Область для текста */
+.card-body {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+/* Область для кнопок */
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto;
+}
+/* Обрезка длинного текста */
+.card-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Показывать только 3 строки */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}

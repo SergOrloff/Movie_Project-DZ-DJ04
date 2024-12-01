@@ -1,0 +1,123 @@
+{% extends 'films/base.html' %}
+{% load static %}
+
+{% block title %}Список фильмов{% endblock %}
+
+{% block content %}
+<!-- Форма поиска -->
+<form method="get" action="{% url 'film_list' %}" class="form-inline mb-4">
+    <input type="text" name="q" class="form-control mr-2" placeholder="Поиск..." value="{{ query }}">
+    <button type="submit" class="btn btn-outline-success">Поиск</button>
+</form>
+
+<div class="row">
+    {% for film in page_obj %}
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                {% if film.image %}
+                    <img src="{{ film.image.url }}" class="card-img-top" alt="Обложка фильма">
+                {% else %}
+                    <img src="{% static 'films/default.jpg' %}" class="card-img-top" alt="Обложка по умолчанию">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title"><strong>{{ film.title }}</strong></h5>
+                    <p class="card-text">{{ film.description|truncatewords:30 }}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="#" class="btn btn-sm btn-outline-secondary" data-toggle="modal" data-target="#filmModal{{ film.id }}">Подробнее</a>
+                    {% if user.is_authenticated %}
+                        <div>
+                            <a href="{% url 'film_update' film.pk %}" class="btn btn-sm btn-primary">Изменить</a>
+                            <a href="{% url 'film_delete' film.pk %}" class="btn btn-sm btn-danger">Удалить</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+<!--        &lt;!&ndash; Модальное окно для отображения информации о фильме &ndash;&gt;-->
+<!--        <div class="modal fade" id="filmModal{{ film.id }}" tabindex="-1" role="dialog" aria-labelledby="filmModalLabel{{ film.id }}" aria-hidden="true">-->
+<!--            <div class="modal-dialog modal-lg" role="document">-->
+<!--                <div class="modal-content">-->
+<!--                    <div class="modal-header">-->
+<!--                        <h5 class="modal-title" id="filmModalLabel{{ film.id }}">{{ film.title }}</h5>-->
+<!--                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
+<!--                            <span aria-hidden="true">&times;</span>-->
+<!--                        </button>-->
+<!--                    </div>-->
+<!--                    <div class="modal-body">-->
+<!--                        {% if film.image %}-->
+<!--                            <img src="{{ film.image.url }}" class="img-fluid mb-3" alt="Обложка фильма">-->
+<!--                        {% else %}-->
+<!--                            <img src="{% static 'films/default.jpg' %}" class="img-fluid mb-3" alt="Обложка по умолчанию">-->
+<!--                        {% endif %}-->
+<!--                        <p><strong>Описание:</strong> {{ film.description }}</p>-->
+<!--                        <p><strong>Отзыв:</strong> {{ film.review }}</p>-->
+<!--                    </div>-->
+<!--                    <div class="modal-footer">-->
+<!--                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+        <div class="modal fade" id="filmModal{{ film.id }}" tabindex="-1" role="dialog" aria-labelledby="filmModalLabel{{ film.id }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="filmModalLabel{{ film.id }}"><strong>{{ film.title }}</strong> </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="image-container">
+                            {% if film.image %}
+                                <img src="{{ film.image.url }}" class="img-fluid mb-3" alt="Обложка фильма">
+                            {% else %}
+                                <img src="{% static 'films/default.jpg' %}" class="img-fluid mb-3" alt="Обложка по умолчанию">
+                            {% endif %}
+                        </div>
+                        <p><strong>Описание:</strong> {{ film.description }}</p>
+                        <p><strong>Отзыв:</strong> {{ film.review }}</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <p>Нет добавленных фильмов.</p>
+    {% endfor %}
+</div>
+
+<!-- Пагинация -->
+<nav aria-label="Навигация по страницам">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?{% if query %}q={{ query }}&amp;{% endif %}page={{ page_obj.previous_page_number }}" aria-label="Предыдущая">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item"><a class="page-link" href="?{% if query %}q={{ query }}&amp;{% endif %}page={{ num }}">{{ num }}</a></li>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?{% if query %}q={{ query }}&amp;{% endif %}page={{ page_obj.next_page_number }}" aria-label="Следующая">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endblock %}
